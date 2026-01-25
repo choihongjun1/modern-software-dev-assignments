@@ -69,12 +69,25 @@ Generated Code Snippets:
 ### Exercise 3: Refactor Existing Code for Clarity
 Prompt: 
 ```
-TODO
+Refactor this router to improve clarity and API contracts.
+
+Replace raw Dict-based request parsing with explicit Pydantic models.
+Define clear request and response schemas.
+Do not change application behavior.
+Add comments explaining the refactoring decisions.
 ``` 
 
 Generated/Modified Code Snippets:
 ```
-TODO: List all modified code files with the relevant line numbers. (We anticipate there may be multiple scattered changes here – just produce as comprehensive of a list as you can.)
+- File: week2/app/routers/action_items.py
+  - Replaced Dict-based request/response handling with Pydantic schemas
+  - Added explicit request/response models and improved documentation
+
+- File: week2/app/schemas.py
+  - Added Pydantic models defining API contracts for action items
+
+- File: week2/app/routers/notes.py
+  - Updated endpoints to use typed request/response schemas
 ```
 
 
