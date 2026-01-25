@@ -129,7 +129,7 @@ Output requirements:
     try:
         # Call Ollama with phi-3 model
         response = chat(
-            model="phi-3",
+            model="phi3:mini",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},

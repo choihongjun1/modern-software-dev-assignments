@@ -46,12 +46,24 @@ Generated Code Snippets:
 ### Exercise 2: Add Unit Tests
 Prompt: 
 ```
-TODO
+Write unit tests for extract_action_items_llm.
+
+The tests should:
+- Import extract_action_items_llm from services.extract
+- Test empty input returns an empty list
+- Test bullet-point input returns a non-empty list
+- Test keyword-based input (e.g. TODO, Action:) returns a list
+- Avoid asserting exact string matches, since LLM output is non-deterministic
+- Assert only on types, length, and general properties
+
+Add comments explaining why the assertions are written this way.
 ``` 
 
 Generated Code Snippets:
 ```
-TODO: List all modified code files with the relevant line numbers.
+- File: week2/tests/test_extract.py
+  - Added tests for extract_action_items_llm
+  - Lines: approximately 21–69
 ```
 
 ### Exercise 3: Refactor Existing Code for Clarity
