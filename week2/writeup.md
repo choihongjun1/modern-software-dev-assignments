@@ -13,7 +13,7 @@ Name: **CHOI HONGJUN** \
 SUNet ID: **202411913** \
 Citations: **Ollama documentation, Cursor IDE**
 
-This assignment took me about **TODO** hours to do. 
+This assignment took me about **4** hours to do. 
 
 
 ## YOUR RESPONSES
@@ -151,12 +151,30 @@ Generated Code Snippets:
 ### Exercise 5: Generate a README from the Codebase
 Prompt: 
 ```
-TODO
+Analyze the entire codebase and generate a comprehensive README.md.
+
+The README should include:
+1. A brief overview of the project and its purpose
+2. Instructions for setting up and running the project locally
+   - Conda environment
+   - Poetry
+   - Running the FastAPI server
+3. Description of key API endpoints and functionality
+   - Action item extraction (rule-based)
+   - LLM-based action item extraction
+   - Notes and action items management
+4. Instructions for running the test suite
+5. Any relevant implementation notes or assumptions
+
+Write the README in clear, concise Markdown.
+Assume the reader is a developer unfamiliar with the codebase.
 ``` 
 
 Generated Code Snippets:
 ```
-TODO: List all modified code files with the relevant line numbers.
+- File: week2/README.md
+  - Auto-generated documentation describing the Week 2 Action Item Extractor
+  - Includes setup, API documentation, testing, and troubleshooting sections
 ```
 
 
