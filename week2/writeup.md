@@ -9,9 +9,9 @@ Fill out all of the `TODO`s in this file.
 
 ## SUBMISSION DETAILS
 
-Name: **TODO** \
-SUNet ID: **TODO** \
-Citations: **TODO**
+Name: **CHOI HONGJUN** \
+SUNet ID: **202411913** \
+Citations: **Ollama documentation, Cursor IDE**
 
 This assignment took me about **TODO** hours to do. 
 
@@ -22,12 +22,25 @@ For each exercise, please include what prompts you used to generate the answer, 
 ### Exercise 1: Scaffold a New Feature
 Prompt: 
 ```
-TODO
+Analyze extract_action_items in this file.
+Add a new function extract_action_items_llm(text: str) -> list[str].
+
+The function should:
+- Use Ollama with a small local model (phi-3)
+- Send the notes to the model
+- Ask for ONLY a JSON array of strings as output
+- Return an empty list for empty input
+- Be robust to malformed model output
+
+Do not modify the existing extract_action_items function.
+Add comments explaining the logic.
 ``` 
 
 Generated Code Snippets:
 ```
-TODO: List all modified code files with the relevant line numbers.
+- File: week2/app/services/extract.py
+  - Added new function `extract_action_items_llm`
+  - Lines: 92–173
 ```
 
 ### Exercise 2: Add Unit Tests
