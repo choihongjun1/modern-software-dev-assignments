@@ -13,7 +13,7 @@ Name: **CHOI HONGJUN** \
 SUNet ID: **202411913** \
 Citations: **Ollama documentation, Cursor IDE**
 
-This assignment took me about **4** hours to do. 
+This assignment took me about **3** hours to do. 
 
 
 ## YOUR RESPONSES
