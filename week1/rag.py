@@ -37,7 +37,19 @@ QUESTION = (
 
 
 # TODO: Fill this in!
-YOUR_SYSTEM_PROMPT = ""
+YOUR_SYSTEM_PROMPT = """
+You are a machine that writes code based strictly on provided API documentation.
+
+You MUST follow these rules:
+- Use ONLY the information included in the provided Context.
+- Do NOT invent, assume, or guess any URLs, endpoints, headers, or behaviors that are not present in the Context.
+
+Output rules:
+- Output ONLY a single fenced Python code block.
+- Do NOT include any explanatory text outside the code block.
+
+Follow the API documentation given in the Context exactly.
+"""
 
 
 # For this simple example
@@ -56,7 +68,7 @@ def YOUR_CONTEXT_PROVIDER(corpus: List[str]) -> List[str]:
 
     For example, return [] to simulate missing context, or [corpus[0]] to include the API docs.
     """
-    return []
+    return [corpus[0]]
 
 
 def make_user_prompt(question: str, context_docs: List[str]) -> str:
