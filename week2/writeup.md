@@ -94,12 +94,57 @@ Generated/Modified Code Snippets:
 ### Exercise 4: Use Agentic Mode to Automate a Small Task
 Prompt: 
 ```
-TODO
+Add a new endpoint for LLM-based action item extraction.
+
+Requirements:
+- Endpoint path: /action-items/extract-llm
+- Use extract_action_items_llm instead of extract_action_items
+- Reuse the existing ExtractActionItemsRequest and ExtractActionItemsResponse schemas
+- Do not change existing endpoints
+- Keep behavior consistent with /extract (including save_note support)
+``` 
+```
+Add a new endpoint to list all notes.
+
+Requirements:
+- Endpoint path: GET /notes
+- Return a list of NoteResponse objects
+- Use the existing database helper list_notes()
+- Do not modify existing endpoints
+``` 
+```
+Update the frontend to support the new backend features.
+
+Requirements:
+1. Add a new button labeled "Extract LLM".
+   - When clicked, send the input text to POST /action-items/extract-llm
+   - Display the returned action items in the same UI as the existing Extract button
+
+2. Add a new button labeled "List Notes".
+   - When clicked, fetch data from GET /notes
+   - Display the list of notes (id and content) on the page
+
+3. Do not break existing functionality.
+   - The original Extract button using /action-items/extract must continue to work.
+
+4. Keep the UI simple.
+   - Plain HTML + JavaScript is sufficient.
+   - No styling changes are required.
+
+Add clear comments explaining the new logic.
 ``` 
 
 Generated Code Snippets:
 ```
-TODO: List all modified code files with the relevant line numbers.
+- File: week2/app/routers/action_items.py
+  - Added /action-items/extract-llm endpoint using LLM-based extraction
+
+- File: week2/app/routers/notes.py
+  - Added GET /notes endpoint to list all notes
+
+- File: frontend/index.html
+  - Added "Extract LLM" and "List Notes" buttons
+  - Added shared JavaScript logic to call new endpoints and render results
 ```
 
 

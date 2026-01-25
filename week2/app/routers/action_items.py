@@ -13,7 +13,7 @@ from ..schemas import (
     MarkDoneRequest,
     MarkDoneResponse,
 )
-from ..services.extract import extract_action_items
+from ..services.extract import extract_action_items, extract_action_items_llm
 
 # ============================================================================
 # Refactoring Notes
@@ -48,6 +48,8 @@ def extract(payload: ExtractActionItemsRequest) -> ExtractActionItemsResponse:
     The Pydantic validator also strips the text, so payload.text is already
     clean and ready to use. This replaces the manual validation and stripping
     that was previously done in the handler.
+    
+    This endpoint uses rule-based extraction (regex patterns and heuristics).
     """
     # Pydantic validator ensures text is non-empty and already stripped
     text = payload.text
@@ -57,6 +59,37 @@ def extract(payload: ExtractActionItemsRequest) -> ExtractActionItemsResponse:
         note_id = db.insert_note(text)
 
     items = extract_action_items(text)
+    ids = db.insert_action_items(items, note_id=note_id)
+    
+    # Build response using Pydantic model for type safety and validation
+    return ExtractActionItemsResponse(
+        note_id=note_id,
+        items=[ActionItemSummary(id=i, text=t) for i, t in zip(ids, items)],
+    )
+
+
+@router.post("/extract-llm", response_model=ExtractActionItemsResponse)
+def extract_llm(payload: ExtractActionItemsRequest) -> ExtractActionItemsResponse:
+    """Extract action items from text using LLM, optionally saving the text as a note.
+    
+    This endpoint uses the same request/response schemas as /extract but employs
+    an LLM-based extraction method (extract_action_items_llm) instead of rule-based
+    heuristics. The LLM approach can better understand context and extract action
+    items that may not match predefined patterns.
+    
+    The request payload is validated by Pydantic: the 'text' field is required,
+    must be non-empty (min_length=1), and cannot be whitespace-only. The behavior
+    is consistent with /extract, including support for save_note.
+    """
+    # Pydantic validator ensures text is non-empty and already stripped
+    text = payload.text
+    
+    note_id: Optional[int] = None
+    if payload.save_note:
+        note_id = db.insert_note(text)
+
+    # Use LLM-based extraction instead of rule-based extraction
+    items = extract_action_items_llm(text)
     ids = db.insert_action_items(items, note_id=note_id)
     
     # Build response using Pydantic model for type safety and validation

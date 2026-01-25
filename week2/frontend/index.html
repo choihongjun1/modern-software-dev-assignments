@@ -24,20 +24,34 @@
     <div class="row">
       <label class="row"><input id="save_note" type="checkbox" checked /> Save as note</label>
       <button id="extract">Extract</button>
+      <button id="extract-llm">Extract LLM</button>
     </div>
 
     <div class="items" id="items"></div>
 
+    <h2 style="margin-top: 2rem;">Notes</h2>
+    <div class="row">
+      <button id="list-notes">List Notes</button>
+    </div>
+    <div class="items" id="notes-list"></div>
+
     <script>
       const $ = (sel) => document.querySelector(sel);
       const itemsEl = $('#items');
-      const btn = $('#extract');
-      btn.addEventListener('click', async () => {
+      const notesListEl = $('#notes-list');
+
+      /**
+       * Shared logic for extraction endpoints. Calls the given API path (either
+       * /action-items/extract or /action-items/extract-llm), then renders the
+       * returned action items in #items and wires up checkbox->done API.
+       * Uses textarea #text and checkbox #save_note. Does not touch List Notes.
+       */
+      async function runExtract(endpoint) {
         const text = $('#text').value;
         const save = $('#save_note').checked;
         itemsEl.textContent = 'Extracting...';
         try {
-          const res = await fetch('/action-items/extract', {
+          const res = await fetch(endpoint, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ text, save_note: save }),
@@ -65,8 +79,42 @@
           console.error(err);
           itemsEl.textContent = 'Error extracting items';
         }
+      }
+
+      // Original Extract: POST /action-items/extract (rule-based). Unchanged behavior.
+      $('#extract').addEventListener('click', () => runExtract('/action-items/extract'));
+
+      // Extract LLM: POST /action-items/extract-llm. Same UI as Extract; results go to #items.
+      $('#extract-llm').addEventListener('click', () => runExtract('/action-items/extract-llm'));
+
+      /**
+       * List Notes: GET /notes, then display id and content in #notes-list.
+       * Does not modify the extraction UI or #items.
+       */
+      $('#list-notes').addEventListener('click', async () => {
+        notesListEl.textContent = 'Loading...';
+        try {
+          const res = await fetch('/notes');
+          if (!res.ok) throw new Error('Request failed');
+          const notes = await res.json();
+          if (!notes || notes.length === 0) {
+            notesListEl.innerHTML = '<p class="muted">No notes.</p>';
+            return;
+          }
+          notesListEl.innerHTML = notes.map(n => (
+            `<div class="item"><span class="muted">#${n.id}</span> ${escapeHtml(n.content)}</div>`
+          )).join('');
+        } catch (err) {
+          console.error(err);
+          notesListEl.textContent = 'Error loading notes';
+        }
       });
 
+      function escapeHtml(s) {
+        const div = document.createElement('div');
+        div.textContent = s;
+        return div.innerHTML;
+      }
     </script>
   </body>
   </html>

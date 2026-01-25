@@ -55,6 +55,20 @@ def create_note(payload: CreateNoteRequest) -> NoteResponse:
     )
 
 
+@router.get("", response_model=list[NoteResponse])
+def list_notes() -> list[NoteResponse]:
+    """List all notes.
+    
+    Returns all notes from the database, ordered by id descending.
+    Uses the existing db.list_notes() helper.
+    """
+    rows = db.list_notes()
+    return [
+        NoteResponse(id=r["id"], content=r["content"], created_at=r["created_at"])
+        for r in rows
+    ]
+
+
 @router.get("/{note_id}", response_model=NoteResponse)
 def get_single_note(note_id: int) -> NoteResponse:
     """Retrieve a single note by its ID.
