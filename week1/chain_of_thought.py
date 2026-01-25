@@ -8,7 +8,21 @@ load_dotenv()
 NUM_RUNS_TIMES = 5
 
 # TODO: Fill this in!
-YOUR_SYSTEM_PROMPT = ""
+YOUR_SYSTEM_PROMPT = """
+You are a careful mathematical reasoner.
+
+You may explain your reasoning step by step to solve the problem.
+You are allowed to use properties of arithmetic and modular arithmetic.
+
+The symbol "^" denotes exponentiation.
+
+Important output rules:
+- Your final answer MUST appear on the last line.
+- The last line MUST be in the exact format: "Answer: <number>"
+- Do not include any text after the final answer line.
+
+Follow these rules strictly.
+"""
 
 
 USER_PROMPT = """
