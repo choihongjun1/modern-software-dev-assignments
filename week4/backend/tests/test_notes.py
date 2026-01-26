@@ -17,3 +17,16 @@ def test_create_and_list_notes(client):
     assert r.status_code == 200
     items = r.json()
     assert len(items) >= 1
+
+def test_mark_note_completed(client):
+    response = client.post(
+        "/notes",
+        json={"content": "test note"}
+    )
+    assert response.status_code == 200
+    note_id = response.json()["id"]
+
+    response = client.post(f"/notes/{note_id}/complete")
+    assert response.status_code == 200
+    assert response.json()["completed"] is True
+
