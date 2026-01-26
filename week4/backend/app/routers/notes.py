@@ -45,3 +45,14 @@ def get_note(note_id: int, db: Session = Depends(get_db)) -> NoteRead:
     if not note:
         raise HTTPException(status_code=404, detail="Note not found")
     return NoteRead.model_validate(note)
+
+@router.post("/{note_id}/complete", response_model=NoteRead)
+def mark_note_completed(note_id: int, db: Session = Depends(get_db)) -> NoteRead:
+    note = db.get(Note, note_id)
+    if not note:
+        raise HTTPException(status_code=404, detail="Note not found")
+
+    note.completed = True
+    db.flush()
+    db.refresh(note)
+    return NoteRead.model_validate(note)

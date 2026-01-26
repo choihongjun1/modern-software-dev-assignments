@@ -21,9 +21,12 @@ def test_create_and_list_notes(client):
 def test_mark_note_completed(client):
     response = client.post(
         "/notes",
-        json={"content": "test note"}
+        json={
+            "title": "Test Title",
+            "content": "test note"
+        }
     )
-    assert response.status_code == 200
+    assert response.status_code == 201
     note_id = response.json()["id"]
 
     response = client.post(f"/notes/{note_id}/complete")

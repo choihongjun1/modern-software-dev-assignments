@@ -10,6 +10,7 @@ class NoteRead(BaseModel):
     id: int
     title: str
     content: str
+    completed: bool
 
     class Config:
         from_attributes = True
