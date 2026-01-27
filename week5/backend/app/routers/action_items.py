@@ -6,8 +6,13 @@ from ..db import get_db
 from ..models import ActionItem
 from ..schemas import ActionItemCreate, ActionItemRead
 
-router = APIRouter(prefix="/action-items", tags=["action_items"])
+from ..envelope import EnvelopeRoute
 
+router = APIRouter(
+    prefix="/action-items",
+    tags=["action-items"],
+    route_class=EnvelopeRoute,
+)
 
 @router.get("/", response_model=list[ActionItemRead])
 def list_items(db: Session = Depends(get_db)) -> list[ActionItemRead]:

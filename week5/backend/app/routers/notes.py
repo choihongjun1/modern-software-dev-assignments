@@ -9,8 +9,13 @@ from ..models import Note, ActionItem
 from ..schemas import NoteCreate, NoteRead
 from ..services.extract import extract_action_items
 
-router = APIRouter(prefix="/notes", tags=["notes"])
+from ..envelope import EnvelopeRoute
 
+router = APIRouter(
+    prefix="/notes",
+    tags=["notes"],
+    route_class=EnvelopeRoute,
+)
 
 @router.get("/", response_model=list[NoteRead])
 def list_notes(db: Session = Depends(get_db)) -> list[NoteRead]:
