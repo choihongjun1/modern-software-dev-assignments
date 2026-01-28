@@ -33,13 +33,17 @@ c. Graphite Diamond generated code review
 
 ## Task 2: Extend extraction logic
 a. Links to relevant commits/issues
-> TODO
+> PR: https://github.com/choihongjun1/modern-software-dev-assignments/pull/2
 
 b. PR Description
-> TODO
+> This PR completes Task 2 by extending the action item extraction logic to support more sophisticated pattern recognition and analysis.
+\
+ The extraction function was enhanced to recognize a broader range of action-oriented expressions, including explicit prefixes (e.g., TODO:, ACTION:), sentence starters (such as "We should", "Please", and "Let's"), and imperative verbs. Additional heuristics were introduced to reduce false positives by filtering out questions, informational statements, and overly vague fragments. Comprehensive unit tests were added to validate the new patterns, ensure correct deduplication, and confirm that non-actionable text is excluded.
+
 
 c. Graphite Diamond generated code review
-> TODO
+> Graphite Diamond initially identified a critical correctness issue in the extraction logic: items matched by explicit prefixes (e.g., TODO:, ACTION:) were not being marked as actionable after normalization and could be incorrectly filtered out. This bug was fixed by explicitly treating prefix matches as actionable signals. After applying the fix, Graphite Diamond reported no remaining issues.
+
 
 ## Task 3: Try adding a new model and relationships
 a. Links to relevant commits/issues
