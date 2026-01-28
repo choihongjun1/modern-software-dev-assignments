@@ -101,8 +101,57 @@ def debug_hash_md5(q: str) -> dict[str, str]:
 
 @router.get("/debug/eval")
 def debug_eval(expr: str) -> dict[str, str]:
-    result = str(eval(expr))  # noqa: S307
-    return {"result": result}
+    import ast
+    import operator
+
+    # SECURITY: `expr` is user-controlled. Never use eval()/exec() here.
+    # Instead, we support a tiny allowlist: basic arithmetic expressions only.
+    #
+    # Allowed:
+    # - numeric literals (int/float)
+    # - unary +/-
+    # - binary ops: +, -, *, /, %, **, //
+    #
+    # Disallowed (examples): names, attribute access, function calls, subscripts,
+    # comprehensions, lambdas, imports, etc.
+
+    allowed_binops: dict[type[ast.operator], object] = {
+        ast.Add: operator.add,
+        ast.Sub: operator.sub,
+        ast.Mult: operator.mul,
+        ast.Div: operator.truediv,
+        ast.FloorDiv: operator.floordiv,
+        ast.Mod: operator.mod,
+        ast.Pow: operator.pow,
+    }
+    allowed_unaryops: dict[type[ast.unaryop], object] = {
+        ast.UAdd: operator.pos,
+        ast.USub: operator.neg,
+    }
+
+    def _eval(node: ast.AST) -> float | int:
+        if isinstance(node, ast.Expression):
+            return _eval(node.body)
+
+        if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
+            return node.value
+
+        if isinstance(node, ast.UnaryOp) and type(node.op) in allowed_unaryops:
+            return allowed_unaryops[type(node.op)](_eval(node.operand))  # type: ignore[misc]
+
+        if isinstance(node, ast.BinOp) and type(node.op) in allowed_binops:
+            return allowed_binops[type(node.op)](_eval(node.left), _eval(node.right))  # type: ignore[misc]
+
+        # Anything else is rejected to avoid executing arbitrary Python.
+        raise ValueError("Only basic arithmetic expressions are allowed")
+
+    try:
+        tree = ast.parse(expr, mode="eval")
+        result = _eval(tree)
+        return {"result": str(result)}
+    except Exception as exc:  # noqa: BLE001
+        # Preserve a simple JSON shape; treat invalid expressions as bad input.
+        raise HTTPException(status_code=400, detail=str(exc))
 
 
 @router.get("/debug/run")
