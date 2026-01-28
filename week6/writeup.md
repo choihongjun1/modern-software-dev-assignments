@@ -14,11 +14,16 @@ SUNet ID: **202411913** \
 Citations: Semgrep documentation (subprocess-shell-true rule), OWASP Top 10 (Injection), Cursor (AI coding assistant)
 
 
-This assignment took me about **TODO** hours to do. 
+This assignment took me about **2** hours to do. 
 
 
-## Brief findings overview 
-> Semgrep reported one confirmed, real finding that I fixed in this codebase: an OS Command Injection risk in the FastAPI debug endpoint `GET /notes/debug/run`. The endpoint executed user-controlled input via `subprocess.run(..., shell=True, ...)`, which Semgrep flagged under the rule **`subprocess-shell-true`**. I mitigated the issue by removing `shell=True` and restricting execution to a strict allowlist of safe commands invoked with `shell=False` and an argument list.
+## Brief findings overview
+> Semgrep identified three SAST findings that I fixed in this codebase:
+> 1) **OS Command Injection** in the FastAPI debug endpoint `GET /notes/debug/run` (rule **`subprocess-shell-true`**) caused by executing user-controlled input with `subprocess.run(..., shell=True, ...)`.
+> 2) **Code Injection / Arbitrary Code Execution** in `GET /notes/debug/eval` (rule **S307**, use of `eval`) caused by evaluating user-controlled expressions directly.
+> 3) **Client-side XSS** in the frontend (`week6/frontend/app.js`) (rule **`insecure-document-method`**) caused by inserting user-controlled content into the DOM using `innerHTML`.
+>
+> I mitigated these issues by (1) removing `shell=True` and enforcing a strict command allowlist with `shell=False`, (2) removing `eval()` and replacing it with an AST-based arithmetic allowlist evaluator, and (3) replacing unsafe DOM writes with `textContent` and safe text-node rendering.
 
 ## Fix #1
 a. File and line(s)
@@ -70,16 +75,22 @@ e. Why this mitigates the issue
 
 ## Fix #3
 a. File and line(s)
-> TODO
+> `week6/frontend/app.js` — `loadNotes()` and `loadActions()` functions, around lines **7–28** (exact line numbers may shift slightly after edits).
 
 b. Rule/category Semgrep flagged
-> TODO
+> Semgrep rule: **`insecure-document-method`** (category: client-side DOM XSS sink via `innerHTML`/`outerHTML`/`document.write`).
 
 c. Brief risk description
-> TODO
+> The frontend rendered note data (e.g., `n.title`, `n.content`) into the page using `innerHTML`. Because note fields are user-controlled, an attacker could store or supply HTML/JavaScript payloads that would be interpreted by the browser when rendered, resulting in client-side Cross-Site Scripting (XSS).
 
 d. Your change (short code diff or explanation, AI coding tool usage)
-> TODO
+> I made the minimal changes required to remove the unsafe DOM sinks while preserving the UI behavior:\
+> - Replaced `list.innerHTML = ''` with `list.textContent = ''` when clearing lists.\
+> - Replaced `li.innerHTML = \`<strong>${n.title}</strong>: ${n.content}\`` with safe DOM construction:\
+>   - Create a `<strong>` element, set `strong.textContent = n.title`, then append a text node for `: ${n.content}`.\
+> - No backend code was changed.\
+>\
+> **AI tool usage:** I used **Cursor** as an AI coding assistant to identify the specific `innerHTML` sinks flagged by Semgrep and to suggest safe, minimal replacements (`textContent` / text nodes). I reviewed and applied the final patch myself.
 
 e. Why this mitigates the issue
-> TODO
+> This mitigates XSS by ensuring user-controlled strings are inserted into the DOM as **text** rather than HTML. `textContent` and `document.createTextNode(...)` do not interpret markup, so any `<script>` or event-handler payloads are rendered inert as literal characters instead of executing in the browser.

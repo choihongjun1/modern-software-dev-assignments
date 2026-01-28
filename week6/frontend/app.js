@@ -6,19 +6,25 @@ async function fetchJSON(url, options) {
 
 async function loadNotes(params = {}) {
   const list = document.getElementById('notes');
-  list.innerHTML = '';
+  // Avoid innerHTML to prevent DOM XSS sinks (Semgrep: insecure-document-method).
+  list.textContent = '';
   const query = new URLSearchParams(params);
   const notes = await fetchJSON('/notes/?' + query.toString());
   for (const n of notes) {
     const li = document.createElement('li');
-    li.innerHTML = `<strong>${n.title}</strong>: ${n.content}`;
+    // n.title/n.content may be user-controlled, so render via text nodes.
+    const strong = document.createElement('strong');
+    strong.textContent = n.title;
+    li.appendChild(strong);
+    li.appendChild(document.createTextNode(`: ${n.content}`));
     list.appendChild(li);
   }
 }
 
 async function loadActions(params = {}) {
   const list = document.getElementById('actions');
-  list.innerHTML = '';
+  // Clearing via textContent avoids innerHTML sinks.
+  list.textContent = '';
   const query = new URLSearchParams(params);
   const items = await fetchJSON('/action-items/?' + query.toString());
   for (const a of items) {
