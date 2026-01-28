@@ -108,8 +108,37 @@ def debug_eval(expr: str) -> dict[str, str]:
 @router.get("/debug/run")
 def debug_run(cmd: str) -> dict[str, str]:
     import subprocess
+    import sys
+    import os
 
-    completed = subprocess.run(cmd, shell=True, capture_output=True, text=True)  # noqa: S602,S603
+    # SECURITY: `cmd` is user-controlled input. Never execute it via a shell.
+    # We enforce a strict allowlist of safe, fixed commands and execute using
+    # an argument list with shell=False to prevent OS command injection.
+    #
+    # Note: We intentionally do NOT support arbitrary arguments (e.g. `ls -la`)
+    # to keep the surface area minimal and predictable.
+    normalized = (cmd or "").strip()
+
+    # Map allowed "commands" to safe, fixed argument lists.
+    # We implement `pwd`/`ls` via the current Python interpreter to be portable
+    # and to avoid relying on shell builtins (e.g. Windows `dir`).
+    allowlist: dict[str, list[str]] = {
+        "whoami": ["whoami"],
+        "pwd": [sys.executable, "-c", "import os; print(os.getcwd())"],
+        "ls": [sys.executable, "-c", "import os; print('\\n'.join(sorted(os.listdir('.'))))"],
+    }
+
+    args = allowlist.get(normalized)
+    if args is None:
+        # Keep the response format unchanged (returncode/stdout/stderr),
+        # but refuse to run anything outside the allowlist.
+        return {
+            "returncode": "1",
+            "stdout": "",
+            "stderr": f"Command not allowed. Allowed: {', '.join(sorted(allowlist.keys()))}",
+        }
+
+    completed = subprocess.run(args, shell=False, capture_output=True, text=True)  # noqa: S603
     return {"returncode": str(completed.returncode), "stdout": completed.stdout, "stderr": completed.stderr}
 
 
