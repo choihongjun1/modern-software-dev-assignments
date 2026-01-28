@@ -1,5 +1,6 @@
-def extract_action_items(text: str) -> list[str]:
     import re
+
+def extract_action_items(text: str) -> list[str]:
 
     def _strip_leading_markers(s: str) -> str:
         # Remove leading bullets/checkboxes/numbering while preserving capitalization.
@@ -101,12 +102,12 @@ def extract_action_items(text: str) -> list[str]:
                 continue
 
             m = prefix_re.match(part)
+            actionable = False
+
             if m:
                 part = m.group(1).strip()
                 part = _strip_leading_markers(part)
-
-            # Keep legacy signals: TODO:/ACTION: (handled by prefix_re) and exclamation emphasis.
-            actionable = False
+                actionable = True  
 
             if starter_re.match(part):
                 actionable = True
@@ -117,6 +118,7 @@ def extract_action_items(text: str) -> list[str]:
 
             if not actionable:
                 continue
+
 
             if _is_question(part):
                 continue
