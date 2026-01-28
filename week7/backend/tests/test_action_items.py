@@ -21,4 +21,10 @@ def test_create_complete_list_and_patch_action_item(client):
     patched = r.json()
     assert patched["description"] == "Updated"
 
+    r = client.delete(f"/action-items/{item['id']}")
+    assert r.status_code == 204, r.text
+
+    r = client.delete(f"/action-items/{item['id']}")
+    assert r.status_code == 404
+
 

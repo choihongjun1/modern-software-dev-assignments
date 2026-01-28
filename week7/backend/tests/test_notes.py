@@ -22,4 +22,13 @@ def test_create_list_and_patch_notes(client):
     patched = r.json()
     assert patched["title"] == "Updated"
 
+    r = client.delete(f"/notes/{note_id}")
+    assert r.status_code == 204, r.text
+
+    r = client.get(f"/notes/{note_id}")
+    assert r.status_code == 404
+
+    r = client.delete(f"/notes/{note_id}")
+    assert r.status_code == 404
+
 
