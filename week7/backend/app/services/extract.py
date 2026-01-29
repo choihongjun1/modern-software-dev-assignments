@@ -1,4 +1,4 @@
-    import re
+import re
 
 def extract_action_items(text: str) -> list[str]:
 
