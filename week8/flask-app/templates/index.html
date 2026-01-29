@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Control Center</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 1rem auto; padding: 0 1rem; }
+        h1 { font-size: 1.25rem; }
+        form { margin-bottom: 1.5rem; }
+        label { display: block; margin-top: 0.5rem; }
+        input, select, button { margin-top: 0.25rem; }
+        .task { padding: 0.5rem 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .task span { flex: 1; }
+        .task button { margin-left: 0.5rem; }
+        .error { color: #c00; font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <h1>Developer Control Center</h1>
+
+    <form id="create-form">
+        <label for="title">Title (required)</label>
+        <input type="text" id="title" name="title" required>
+        <label for="description">Description</label>
+        <input type="text" id="description" name="description" placeholder="Optional">
+        <label for="status">Status</label>
+        <select id="status" name="status">
+            <option value="todo">To Do</option>
+            <option value="in_progress">In Progress</option>
+            <option value="done">Done</option>
+        </select>
+        <button type="submit">Add Task</button>
+    </form>
+    <p id="form-error" class="error" style="display: none;"></p>
+
+    <h2>Tasks</h2>
+    <ul id="task-list"></ul>
+
+    <script>
+        const taskList = document.getElementById('task-list');
+        const createForm = document.getElementById('create-form');
+        const formError = document.getElementById('form-error');
+
+        function hideError() {
+            formError.style.display = 'none';
+            formError.textContent = '';
+        }
+
+        function showError(msg) {
+            formError.textContent = msg;
+            formError.style.display = 'block';
+        }
+
+        function renderTask(task) {
+            const li = document.createElement('li');
+            li.className = 'task';
+            li.dataset.id = task.id;
+            const text = document.createElement('span');
+            text.textContent = `${task.title} [${task.status}]`;
+            if (task.description) text.textContent += ' — ' + task.description;
+            const delBtn = document.createElement('button');
+            delBtn.type = 'button';
+            delBtn.textContent = 'Delete';
+            delBtn.addEventListener('click', () => deleteTask(task.id));
+            li.appendChild(text);
+            li.appendChild(delBtn);
+            return li;
+        }
+
+        function loadTasks() {
+            fetch('/api/tasks')
+                .then(res => res.json())
+                .then(tasks => {
+                    taskList.innerHTML = '';
+                    tasks.forEach(task => taskList.appendChild(renderTask(task)));
+                })
+                .catch(() => { taskList.innerHTML = '<li>Failed to load tasks.</li>'; });
+        }
+
+        function deleteTask(id) {
+            fetch(`/api/tasks/${id}`, { method: 'DELETE' })
+                .then(res => {
+                    if (res.ok) {
+                        const li = taskList.querySelector(`[data-id="${id}"]`);
+                        if (li) li.remove();
+                    }
+                })
+                .catch(() => {});
+        }
+
+        createForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            hideError();
+            const title = document.getElementById('title').value.trim();
+            if (!title) {
+                showError('Title is required.');
+                return;
+            }
+            const payload = {
+                title: title,
+                description: document.getElementById('description').value.trim(),
+                status: document.getElementById('status').value
+            };
+            fetch('/api/tasks', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+                .then(res => res.json().then(data => ({ status: res.status, data })))
+                .then(({ status, data }) => {
+                    if (status === 201) {
+                        taskList.insertBefore(renderTask(data), taskList.firstChild);
+                        createForm.reset();
+                    } else {
+                        showError(data.error || 'Failed to create task.');
+                    }
+                })
+                .catch(() => showError('Failed to create task.'));
+        });
+
+        loadTasks();
+    </script>
+</body>
+</html>
