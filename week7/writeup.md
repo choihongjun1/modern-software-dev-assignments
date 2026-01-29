@@ -47,13 +47,17 @@ c. Graphite Diamond generated code review
 
 ## Task 3: Try adding a new model and relationships
 a. Links to relevant commits/issues
-> TODO
+> PR: https://github.com/choihongjun1/modern-software-dev-assignments/pull/3
 
 b. PR Description
-> TODO
+> This PR completes Task 3 by introducing a new Project model and establishing a one-to-many relationship between projects and notes.
+\
+ A new Project entity was added, and the Note model was updated to optionally reference a project via a foreign key. The API was extended to support creating projects, fetching individual projects, and retrieving notes associated with a specific project. Additional validation was added to prevent notes from being associated with non-existent projects.
+
 
 c. Graphite Diamond generated code review
-> TODO
+> Graphite Diamond completed an automated review and did not surface any issues ("Graphite Agent found no issues"). The absence of findings suggested that the new model, relationships, and API changes followed common SQLAlchemy and FastAPI best practices.
+
 
 ## Task 4: Improve tests for pagination and sorting
 a. Links to relevant commits/issues

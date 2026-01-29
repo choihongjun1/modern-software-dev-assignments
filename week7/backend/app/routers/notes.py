@@ -5,7 +5,7 @@ from sqlalchemy import asc, desc, select
 from sqlalchemy.orm import Session
 
 from ..db import get_db
-from ..models import Note
+from ..models import Note, Project
 from ..schemas import NoteCreate, NotePatch, NoteRead
 
 router = APIRouter(prefix="/notes", tags=["notes"])
@@ -72,7 +72,13 @@ def list_notes(
 def create_note(payload: NoteCreate, db: Session = Depends(get_db)) -> NoteRead:
     _reject_blank(payload.title, "title")
     _reject_blank(payload.content, "content")
-    note = Note(title=payload.title, content=payload.content)
+    if payload.project_id is not None and db.get(Project, payload.project_id) is None:
+        raise HTTPException(status_code=404, detail="Project not found")
+    note = Note(
+        title=payload.title,
+        content=payload.content,
+        project_id=payload.project_id,
+    )
     db.add(note)
     db.flush()
     db.refresh(note)
@@ -84,12 +90,16 @@ def patch_note(note_id: int, payload: NotePatch, db: Session = Depends(get_db)) 
     note = db.get(Note, note_id)
     if not note:
         raise HTTPException(status_code=404, detail="Note not found")
+    if payload.project_id is not None and db.get(Project, payload.project_id) is None:
+        raise HTTPException(status_code=404, detail="Project not found")
     if payload.title is not None:
         _reject_blank(payload.title, "title")
         note.title = payload.title
     if payload.content is not None:
         _reject_blank(payload.content, "content")
         note.content = payload.content
+    if payload.project_id is not None:
+        note.project_id = payload.project_id
     db.add(note)
     db.flush()
     db.refresh(note)
