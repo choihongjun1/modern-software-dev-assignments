@@ -11,9 +11,13 @@ Fill out all of the `TODO`s in this file.
 
 Name: **CHOI HONGJUN** \
 SUNet ID: **202411913** \
-Citations: **TODO**
+Citations: 
+- Graphite Diamond AI Code Review (https://graphite.dev)
+- FastAPI Documentation (https://fastapi.tiangolo.com/)
+- SQLAlchemy ORM Documentation (https://docs.sqlalchemy.org/)
 
-This assignment took me about **TODO** hours to do. 
+
+This assignment took me about **4** hours to do. 
 
 
 ## Task 1: Add more endpoints and validations
@@ -61,26 +65,34 @@ c. Graphite Diamond generated code review
 
 ## Task 4: Improve tests for pagination and sorting
 a. Links to relevant commits/issues
-> TODO
+> PR: https://github.com/choihongjun1/modern-software-dev-assignments/pull/4
 
 b. PR Description
-> TODO
+> This PR completes Task 4 by improving test coverage for pagination and sorting functionality across the application.
+\
+Additional tests were added to explicitly verify pagination behavior using skip and limit parameters, as well as sorting behavior using the sort query parameter. Both successful and error cases were covered to ensure that valid sort fields produce correctly ordered results and invalid sort fields return appropriate errors.
+
 
 c. Graphite Diamond generated code review
-> TODO
+> Graphite Diamond completed an automated review and did not surface any issues ("Graphite Agent found no issues"). The lack of findings indicated that the added tests aligned well with existing pagination and sorting logic and followed common testing best practices.
+
 
 ## Brief Reflection 
 a. The types of comments you typically made in your manual reviews (e.g., correctness, performance, security, naming, test gaps, API shape, UX, docs).
-> TODO 
+> In my manual reviews, I primarily focused on correctness, data integrity, and API behavior. This included checking edge cases, validating database relationships and foreign keys, ensuring consistent error handling, and verifying that test coverage reflected real usage scenarios. I also paid attention to API shape and schema boundaries to avoid unnecessary coupling or overexposure of internal data.
+
 
 b. A comparison of **your** comments vs. **Graphite’s** AI-generated comments for each PR.
-> TODO
+> Overall, my manual reviews tended to focus on intent and edge cases, while Graphite’s AI-generated reviews focused on validating structural correctness and common best practices. In Task 2, the AI review was especially valuable in identifying a subtle logic bug that I initially missed. In Tasks 1, 3, and 4, the AI reviews did not raise issues and instead served as confirmation that the implementations aligned with standard patterns.
+
 
 c. When the AI reviews were better/worse than yours (cite specific examples)
-> TODO
+> The AI review outperformed my manual review in Task 2 by catching a correctness bug where prefix-based action items (e.g., TODO:, ACTION:) were not being marked as actionable after normalization. This issue could have caused expected behavior to silently break. In contrast, my manual reviews were more effective in Tasks 1 and 3, where I added explicit validation logic (such as preventing notes from referencing non-existent projects) and made design decisions around schema boundaries that the AI did not comment on.
+
 
 d. Your comfort level trusting AI reviews going forward and any heuristics for when to rely on them.
->TODO 
+> I am comfortable using AI reviews as a first-pass validation tool to check for common mistakes, style issues, and structural correctness. However, I do not fully rely on AI reviews for complex logic, data relationships, or domain-specific decisions. Going forward, my heuristic is to use AI reviews for breadth and consistency checks, while relying on manual review for depth, correctness, and design intent.
+
 
 
 
